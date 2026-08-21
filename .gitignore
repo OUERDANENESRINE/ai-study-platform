@@ -1,0 +1,15 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+.env
+
+# Node
+node_modules/
+.next/
+
+# Uploads
+uploads/
+
+# OS
+.DS_Store
