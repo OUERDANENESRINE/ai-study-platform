@@ -3,3 +3,24 @@ export async function checkHealth() {
   if (!res.ok) throw new Error("Backend not reachable");
   return res.json();
 }
+export async function uploadCourse(file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/courses/upload`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!res.ok) throw new Error("Upload failed");
+  return res.json();
+}
+
+
+export async function getSummary(courseId: number, level: string = "medium") {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/courses/${courseId}/summary?level=${level}`
+  );
+  if (!res.ok) throw new Error("Failed to generate summary");
+  return res.json();
+}

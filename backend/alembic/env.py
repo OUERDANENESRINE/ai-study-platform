@@ -7,6 +7,7 @@ from sqlalchemy import pool
 
 from alembic import context
 from dotenv import load_dotenv
+from models.chunk import Chunk
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
