@@ -13,6 +13,13 @@ from services.embedding_service import generate_embeddings, embed_query
 from services.search_service import find_relevant_chunks
 from services.claude_service import generate_summary, answer_question
 
+
+
+from models.quiz import Quiz, QuizQuestion, QuizAttempt
+from services.quiz_service import generate_quiz_questions
+
+
+
 router = APIRouter(prefix="/courses", tags=["courses"])
 
 UPLOAD_DIR = "uploads"
@@ -100,3 +107,45 @@ def ask_question(course_id: int, body: QuestionRequest, db: Session = Depends(ge
     sources = sorted(set(c.page for c in relevant_chunks if c.page is not None))
 
     return {"answer": answer, "sources": sources}
+
+
+
+@router.post("/{course_id}/quiz/generate")
+def generate_quiz(course_id: int, db: Session = Depends(get_db)):
+    chunks = db.query(Chunk).filter(Chunk.course_id == course_id).order_by(Chunk.page).all()
+
+    if not chunks:
+        return {"error": "Course not found or has no content"}
+
+    course_text = "\n\n".join(c.content for c in chunks)
+
+    questions_data = generate_quiz_questions(course_text, num_questions=5)
+
+    quiz = Quiz(course_id=course_id)
+    db.add(quiz)
+    db.commit()
+    db.refresh(quiz)
+
+    for q in questions_data:
+        question = QuizQuestion(
+            quiz_id=quiz.id,
+            question=q["question"],
+            options=q["options"],
+            correct_answer=q["correct_answer"],
+            topic=q.get("topic"),
+        )
+        db.add(question)
+
+    db.commit()
+
+    saved_questions = (
+        db.query(QuizQuestion).filter(QuizQuestion.quiz_id == quiz.id).all()
+    )
+
+    return {
+        "quiz_id": quiz.id,
+        "questions": [
+            {"id": q.id, "question": q.question, "options": q.options}
+            for q in saved_questions
+        ],
+    }

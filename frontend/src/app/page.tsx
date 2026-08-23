@@ -93,12 +93,14 @@ export default function Home() {
            <Link
   key={f.title}
   href={
-    f.title === "A resume"
-      ? "/summary/3"
-      : f.title === "Q&A"
-      ? "/qa/3"
-      : "#"
-  }
+  f.title === "A resume"
+    ? "/summary/3"
+    : f.title === "Q&A"
+    ? "/qa/3"
+    : f.title === "Quiz (QCM)"
+    ? "/quiz/3"
+    : "#"
+}
   className="bg-white rounded-2xl p-5 shadow-sm flex items-start gap-3 hover:shadow-md transition-shadow text-left"
 >
   <f.icon className="w-5 h-5 text-[#B15FCB] mt-1" />
