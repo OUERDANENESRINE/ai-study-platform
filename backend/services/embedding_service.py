@@ -21,3 +21,10 @@ def generate_embeddings(texts: list[str], batch_size: int = 3) -> list[list[floa
             time.sleep(20)  # respecter la limite de 3 requêtes/minute
 
     return all_embeddings
+
+def embed_query(text: str) -> list[float]:
+    """
+    Génère l'embedding d'une question (pas d'un document).
+    """
+    result = client.embed([text], model="voyage-3", input_type="query")
+    return result.embeddings[0]

@@ -1,23 +1,25 @@
 import os
 import shutil
-from fastapi import APIRouter, UploadFile, File, Depends
+from fastapi import APIRouter, UploadFile, File, Depends, Query
 from sqlalchemy.orm import Session
+from pydantic import BaseModel
 
 from db.database import get_db
 from models.course import Course
 from models.chunk import Chunk
 from services.pdf_service import extract_text_by_page
 from services.chunking_service import chunk_text
-from services.embedding_service import generate_embeddings
+from services.embedding_service import generate_embeddings, embed_query
+from services.search_service import find_relevant_chunks
+from services.claude_service import generate_summary, answer_question
 
 router = APIRouter(prefix="/courses", tags=["courses"])
 
 UPLOAD_DIR = "uploads"
 
 
-
-from fastapi import Query
-from services.claude_service import generate_summary
+class QuestionRequest(BaseModel):
+    question: str
 
 
 @router.get("/{course_id}/summary")
@@ -81,3 +83,20 @@ async def upload_course(file: UploadFile = File(...), db: Session = Depends(get_
         "word_count": course.word_count,
         "num_chunks": len(chunks_data),
     }
+
+
+@router.post("/{course_id}/ask")
+def ask_question(course_id: int, body: QuestionRequest, db: Session = Depends(get_db)):
+    query_embedding = embed_query(body.question)
+
+    relevant_chunks = find_relevant_chunks(db, course_id, query_embedding, top_k=5)
+
+    if not relevant_chunks:
+        return {"answer": "Aucun contenu trouvé pour ce cours.", "sources": []}
+
+    context_texts = [c.content for c in relevant_chunks]
+    answer = answer_question(body.question, context_texts)
+
+    sources = sorted(set(c.page for c in relevant_chunks if c.page is not None))
+
+    return {"answer": answer, "sources": sources}

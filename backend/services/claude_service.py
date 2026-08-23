@@ -44,3 +44,22 @@ Structure ta réponse avec des titres de sections clairs (##) et une liste de co
     contents=prompt,
 )
     return response.text
+
+
+def answer_question(question: str, context_chunks: list[str]) -> str:
+    context = "\n\n---\n\n".join(context_chunks)
+
+    prompt = f"""Voici des extraits d'un cours :
+
+{context}
+
+Question : {question}
+
+Réponds à la question en te basant uniquement sur les extraits ci-dessus. Si la réponse ne s'y trouve pas, dis-le clairement."""
+
+    response = client.models.generate_content(
+        model="gemini-3.6-flash",
+        contents=prompt,
+    )
+
+    return response.text

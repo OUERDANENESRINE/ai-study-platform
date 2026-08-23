@@ -24,3 +24,16 @@ export async function getSummary(courseId: number, level: string = "medium") {
   if (!res.ok) throw new Error("Failed to generate summary");
   return res.json();
 }
+
+export async function askQuestion(courseId: number, question: string) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/courses/${courseId}/ask`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question }),
+    }
+  );
+  if (!res.ok) throw new Error("Failed to get answer");
+  return res.json();
+}
