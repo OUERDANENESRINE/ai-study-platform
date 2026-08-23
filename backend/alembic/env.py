@@ -17,6 +17,7 @@ from db.database import Base
 from models.course import Course
 
 from models.quiz import Quiz, QuizQuestion, QuizAttempt
+from models.flashcard import Flashcard, FlashcardReview
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -62,3 +62,25 @@ export async function submitQuiz(
   if (!res.ok) throw new Error("Failed to submit quiz");
   return res.json();
 }
+
+export async function generateFlashcards(courseId: number) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/flashcards/course/${courseId}/generate`,
+    { method: "POST" }
+  );
+  if (!res.ok) throw new Error("Failed to generate flashcards");
+  return res.json();
+}
+
+export async function reviewFlashcard(flashcardId: number, difficulty: string) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/flashcards/${flashcardId}/review`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ difficulty }),
+    }
+  );
+  if (!res.ok) throw new Error("Failed to save review");
+  return res.json();
+}

@@ -99,6 +99,8 @@ export default function Home() {
     ? "/qa/3"
     : f.title === "Quiz (QCM)"
     ? "/quiz/3"
+    : f.title === "Flashcards"
+    ? "/flashcards/3"
     : "#"
 }
   className="bg-white rounded-2xl p-5 shadow-sm flex items-start gap-3 hover:shadow-md transition-shadow text-left"
