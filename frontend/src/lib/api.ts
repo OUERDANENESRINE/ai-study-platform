@@ -84,3 +84,19 @@ export async function reviewFlashcard(flashcardId: number, difficulty: string) {
   if (!res.ok) throw new Error("Failed to save review");
   return res.json();
 }
+
+export async function getProgress(courseId: number) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/progress/course/${courseId}`
+  );
+  if (!res.ok) throw new Error("Failed to fetch progress");
+  return res.json();
+}
+
+export async function getRecommendation(courseId: number) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/progress/course/${courseId}/recommendation`
+  );
+  if (!res.ok) throw new Error("Failed to fetch recommendation");
+  return res.json();
+}

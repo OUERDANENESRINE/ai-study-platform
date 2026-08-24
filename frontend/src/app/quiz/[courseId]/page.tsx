@@ -16,34 +16,32 @@ export default function QuizPage() {
 
   const [quizId, setQuizId] = useState<number | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(true);
   const [result, setResult] = useState<any>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
+  const loadQuiz = () => {
+    setLoading(true);
+    setResult(null);
+    setAnswers({});
     generateQuiz(courseId)
       .then((data) => {
         setQuizId(data.quiz_id);
         setQuestions(data.questions);
       })
       .finally(() => setLoading(false));
-  }, [courseId]);
-
-  const currentQuestion = questions[currentIndex];
-
-  const handleSelect = (option: string) => {
-    setAnswers((prev) => ({ ...prev, [currentQuestion.id]: option }));
   };
 
-  const handleNext = async () => {
-    if (currentIndex < questions.length - 1) {
-      setCurrentIndex((i) => i + 1);
-      return;
-    }
+  useEffect(() => {
+    loadQuiz();
+  }, [courseId]);
 
-    // Dernière question → soumettre le quiz
+  const handleSelect = (questionId: number, option: string) => {
+    setAnswers((prev) => ({ ...prev, [questionId]: option }));
+  };
+
+  const handleSubmit = async () => {
     if (!quizId) return;
     setSubmitting(true);
     const formattedAnswers = Object.entries(answers).map(
@@ -57,10 +55,12 @@ export default function QuizPage() {
     setSubmitting(false);
   };
 
+  const allAnswered = questions.length > 0 && questions.every((q) => answers[q.id]);
+
   if (loading) {
     return (
       <main className="min-h-screen bg-[#F4E9F8] flex items-center justify-center">
-        <p className="text-gray-600">Génération du quiz...</p>
+        <p className="text-gray-600">Generating quiz...</p>
       </main>
     );
   }
@@ -72,15 +72,15 @@ export default function QuizPage() {
         <div className="w-full max-w-2xl">
           <div className="bg-white rounded-2xl p-8 text-center shadow-sm">
             <p className="text-2xl font-bold text-gray-800 mb-2">
-              🎉 Ton résultat
+              🎉 Your result
             </p>
             <p className="text-3xl font-bold text-[#B15FCB] mb-6">
               {result.score} / {result.total} — {percentage}%
             </p>
             {result.weak_topics.length > 0 && (
-              <div className="text-left bg-[#EAD4F0] rounded-xl p-4">
+              <div className="text-left bg-[#EAD4F0] rounded-xl p-4 mb-6">
                 <p className="font-semibold text-gray-700 mb-2">
-                  Tu devrais revoir :
+                  You should review:
                 </p>
                 <ul className="list-disc list-inside text-sm text-gray-600">
                   {result.weak_topics.map((topic: string) => (
@@ -89,6 +89,12 @@ export default function QuizPage() {
                 </ul>
               </div>
             )}
+            <button
+              onClick={loadQuiz}
+              className="bg-[#B15FCB] text-white rounded-full px-6 py-3 text-sm font-medium"
+            >
+              Generate new questions
+            </button>
           </div>
         </div>
       </main>
@@ -97,62 +103,53 @@ export default function QuizPage() {
 
   return (
     <main className="min-h-screen bg-[#F4E9F8] flex justify-center p-6">
-      <div className="w-full max-w-2xl">
-        {/* Navbar */}
-        <div className="flex items-center justify-between mb-8">
-          <span className="text-sm font-medium text-gray-500">QCM</span>
-          <div className="bg-white rounded-full px-5 py-2 shadow-sm">
-            <span className="text-sm font-semibold text-gray-800">
-              My Course AI
-            </span>
-          </div>
-          <button className="bg-white rounded-full px-4 py-2 shadow-sm text-sm text-gray-600">
-            Fr ▾
+      <div className="w-full max-w-2xl pb-24">
+        <span className="text-sm font-medium text-gray-500 block mb-4">
+          QCM — {questions.length} questions
+        </span>
+
+        <div className="flex flex-col gap-4">
+          {questions.map((q, index) => (
+            <div key={q.id} className="bg-white rounded-2xl p-5 shadow-sm">
+              <p className="font-semibold text-gray-800 mb-4">
+                Q{index + 1}: {q.question}
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                {q.options.map((option) => {
+                  const isSelected = answers[q.id] === option;
+                  return (
+                    <button
+                      key={option}
+                      onClick={() => handleSelect(q.id, option)}
+                      className={`text-left px-4 py-3 rounded-xl text-sm transition-colors ${
+                        isSelected
+                          ? "bg-[#B15FCB] text-white"
+                          : "bg-[#F4E9F8] text-gray-700 hover:bg-[#EAD4F0]"
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Barre fixe en bas avec bouton de soumission */}
+        <div className="fixed bottom-6 left-0 right-0 flex justify-center px-6">
+          <button
+            onClick={handleSubmit}
+            disabled={!allAnswered || submitting}
+            className="bg-[#B15FCB] text-white rounded-full px-8 py-3 text-sm font-medium shadow-lg disabled:opacity-40"
+          >
+            {submitting
+              ? "Submitting..."
+              : allAnswered
+              ? "Submit quiz"
+              : `Answer all questions (${Object.keys(answers).length}/${questions.length})`}
           </button>
         </div>
-
-        <p className="text-sm text-gray-500 mb-3">
-          Question {currentIndex + 1} / {questions.length}
-        </p>
-
-        {/* Question */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm">
-          <p className="font-semibold text-gray-800 mb-4">
-            {currentQuestion.question}
-          </p>
-
-          <div className="grid grid-cols-2 gap-3">
-            {currentQuestion.options.map((option) => {
-              const isSelected = answers[currentQuestion.id] === option;
-              return (
-                <button
-                  key={option}
-                  onClick={() => handleSelect(option)}
-                  className={`text-left px-4 py-3 rounded-xl text-sm transition-colors ${
-                    isSelected
-                      ? "bg-[#B15FCB] text-white"
-                      : "bg-[#F4E9F8] text-gray-700 hover:bg-[#EAD4F0]"
-                  }`}
-                >
-                  {option}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Bouton suivant */}
-        <button
-          onClick={handleNext}
-          disabled={!answers[currentQuestion.id] || submitting}
-          className="mt-4 w-full bg-[#B15FCB] text-white rounded-full py-3 text-sm font-medium disabled:opacity-40"
-        >
-          {submitting
-            ? "Correction..."
-            : currentIndex < questions.length - 1
-            ? "Suivant →"
-            : "Terminer le quiz"}
-        </button>
       </div>
     </main>
   );

@@ -3,17 +3,20 @@
 import { useState } from "react";
 import { FileUp, Loader2 } from "lucide-react";
 import { uploadCourse } from "@/lib/api";
+import { useCourse } from "@/context/CourseContext";
 
 type CourseInfo = {
   filename: string;
   num_pages: number;
   word_count: number;
+  id: number;
 };
 
 export default function UploadCourse() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [course, setCourse] = useState<CourseInfo | null>(null);
+  const { setCourse: setGlobalCourse } = useCourse();
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -25,6 +28,7 @@ export default function UploadCourse() {
     try {
       const data = await uploadCourse(file);
       setCourse(data);
+      setGlobalCourse(data);
     } catch (err) {
       setError("Échec de l'upload. Réessaie.");
     } finally {

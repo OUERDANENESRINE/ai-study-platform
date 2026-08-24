@@ -19,13 +19,21 @@ export default function FlashcardsPage() {
   const [flipped, setFlipped] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const loadCards = () => {
+    setLoading(true);
+    setCurrentIndex(0);
+    setFlipped(false);
     generateFlashcards(courseId)
       .then((data) => setCards(data.flashcards))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadCards();
   }, [courseId]);
 
   const currentCard = cards[currentIndex];
+  const isLastCard = currentIndex === cards.length - 1;
 
   const goNext = () => {
     setFlipped(false);
@@ -40,13 +48,14 @@ export default function FlashcardsPage() {
   const handleDifficulty = async (difficulty: string) => {
     if (!currentCard) return;
     await reviewFlashcard(currentCard.id, difficulty);
-    goNext();
+    if (!isLastCard) goNext();
+    else setFlipped(false);
   };
 
   if (loading) {
     return (
       <main className="min-h-screen bg-[#F4E9F8] flex items-center justify-center">
-        <p className="text-gray-600">Génération des flashcards...</p>
+        <p className="text-gray-600">Generating flashcards...</p>
       </main>
     );
   }
@@ -54,7 +63,7 @@ export default function FlashcardsPage() {
   if (!currentCard) {
     return (
       <main className="min-h-screen bg-[#F4E9F8] flex items-center justify-center">
-        <p className="text-gray-600">Aucune flashcard disponible.</p>
+        <p className="text-gray-600">No flashcards available.</p>
       </main>
     );
   }
@@ -62,18 +71,9 @@ export default function FlashcardsPage() {
   return (
     <main className="min-h-screen bg-[#F4E9F8] flex justify-center p-6">
       <div className="w-full max-w-xl flex flex-col items-center">
-        {/* Navbar */}
-        <div className="flex items-center justify-between w-full mb-10">
-          <span className="text-sm font-medium text-gray-500">Flashcards</span>
-          <div className="bg-white rounded-full px-5 py-2 shadow-sm">
-            <span className="text-sm font-semibold text-gray-800">
-              My Course AI
-            </span>
-          </div>
-          <button className="bg-white rounded-full px-4 py-2 shadow-sm text-sm text-gray-600">
-            Fr ▾
-          </button>
-        </div>
+        <span className="text-sm font-medium text-gray-500 mb-6">
+          Flashcards
+        </span>
 
         {/* Carte flip */}
         <div
@@ -88,14 +88,12 @@ export default function FlashcardsPage() {
               transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
             }}
           >
-            {/* Recto */}
             <div
               className="absolute inset-0 bg-[#B15FCB] rounded-2xl flex items-center justify-center p-6 text-white text-center font-semibold"
               style={{ backfaceVisibility: "hidden" }}
             >
               {currentCard.front}
             </div>
-            {/* Verso */}
             <div
               className="absolute inset-0 bg-white border-2 border-[#B15FCB] rounded-2xl flex items-center justify-center p-6 text-gray-800 text-center"
               style={{
@@ -110,26 +108,25 @@ export default function FlashcardsPage() {
 
         <p className="text-xs text-gray-400 mt-3">Click to flip</p>
 
-        {/* Boutons difficulté (visibles seulement une fois retournée) */}
         {flipped && (
           <div className="flex gap-3 mt-6">
             <button
               onClick={() => handleDifficulty("difficult")}
               className="bg-white rounded-full px-4 py-2 text-sm shadow-sm"
             >
-               Difficult
+              😕 Difficult
             </button>
             <button
               onClick={() => handleDifficulty("good")}
               className="bg-white rounded-full px-4 py-2 text-sm shadow-sm"
             >
-               Good
+              🙂 Good
             </button>
             <button
               onClick={() => handleDifficulty("easy")}
               className="bg-white rounded-full px-4 py-2 text-sm shadow-sm"
             >
-               Easy
+              😎 Easy
             </button>
           </div>
         )}
@@ -148,12 +145,22 @@ export default function FlashcardsPage() {
           </span>
           <button
             onClick={goNext}
-            disabled={currentIndex === cards.length - 1}
+            disabled={isLastCard}
             className="text-sm text-gray-500 disabled:opacity-30"
           >
             Next →
           </button>
         </div>
+
+        {/* Générer un nouveau set, visible à la dernière carte */}
+        {isLastCard && (
+          <button
+            onClick={loadCards}
+            className="mt-8 bg-[#B15FCB] text-white rounded-full px-6 py-3 text-sm font-medium"
+          >
+            Generate new flashcards
+          </button>
+        )}
       </div>
     </main>
   );

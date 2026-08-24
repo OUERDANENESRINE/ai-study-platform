@@ -23,18 +23,8 @@ export default function SummaryPage() {
   return (
     <main className="min-h-screen bg-[#F4E9F8] flex justify-center p-6">
       <div className="w-full max-w-3xl">
-        {/* Navbar */}
-        <div className="flex items-center justify-between mb-8">
-          <span className="text-sm font-medium text-gray-500">Resume</span>
-          <div className="bg-white rounded-full px-5 py-2 shadow-sm">
-            <span className="text-sm font-semibold text-gray-800">
-              My Course AI
-            </span>
-          </div>
-          <button className="bg-white rounded-full px-4 py-2 shadow-sm text-sm text-gray-600">
-            Fr ▾
-          </button>
-        </div>
+       
+       
 
         {/* Niveau de détail */}
         <div className="flex gap-2 mb-4">

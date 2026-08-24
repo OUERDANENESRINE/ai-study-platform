@@ -2,13 +2,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from db.database import engine
 from sqlalchemy import text
-from routers import courses, quiz,flashcards
+from routers import courses, quiz,flashcards,progress
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3001"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -17,6 +17,7 @@ app.add_middleware(
 app.include_router(courses.router)
 app.include_router(quiz.router)
 app.include_router(flashcards.router)
+app.include_router(progress.router)
 
 
 @app.get("/health")
