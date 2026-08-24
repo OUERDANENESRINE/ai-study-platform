@@ -114,19 +114,19 @@ export default function FlashcardsPage() {
               onClick={() => handleDifficulty("difficult")}
               className="bg-white rounded-full px-4 py-2 text-sm shadow-sm"
             >
-              😕 Difficult
+               Difficult
             </button>
             <button
               onClick={() => handleDifficulty("good")}
               className="bg-white rounded-full px-4 py-2 text-sm shadow-sm"
             >
-              🙂 Good
+               Good
             </button>
             <button
               onClick={() => handleDifficulty("easy")}
               className="bg-white rounded-full px-4 py-2 text-sm shadow-sm"
             >
-              😎 Easy
+               Easy
             </button>
           </div>
         )}

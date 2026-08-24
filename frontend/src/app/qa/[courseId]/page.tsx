@@ -102,7 +102,7 @@ export default function QAPage() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Question ? blaablablaa"
+            placeholder="Question ? "
             className="flex-1 outline-none text-sm text-gray-700"
             disabled={loading}
           />

@@ -72,7 +72,7 @@ export default function QuizPage() {
         <div className="w-full max-w-2xl">
           <div className="bg-white rounded-2xl p-8 text-center shadow-sm">
             <p className="text-2xl font-bold text-gray-800 mb-2">
-              🎉 Your result
+              Your result
             </p>
             <p className="text-3xl font-bold text-[#B15FCB] mb-6">
               {result.score} / {result.total} — {percentage}%
