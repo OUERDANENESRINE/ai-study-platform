@@ -32,10 +32,15 @@ export default function QuizPage() {
         setQuizId(data.quiz_id);
         setQuestions(data.questions);
       })
+      .catch((err) => {
+        console.error("Failed to load quiz:", err);
+        setQuestions([]);
+      })
       .finally(() => setLoading(false));
   };
 
   useEffect(() => {
+    if (!courseId || isNaN(courseId)) return;
     loadQuiz();
   }, [courseId]);
 
@@ -46,15 +51,20 @@ export default function QuizPage() {
   const handleSubmit = async () => {
     if (!quizId) return;
     setSubmitting(true);
-    const formattedAnswers = Object.entries(answers).map(
-      ([question_id, selected_option]) => ({
-        question_id: Number(question_id),
-        selected_option,
-      })
-    );
-    const data = await submitQuiz(quizId, formattedAnswers);
-    setResult(data);
-    setSubmitting(false);
+    try {
+      const formattedAnswers = Object.entries(answers).map(
+        ([question_id, selected_option]) => ({
+          question_id: Number(question_id),
+          selected_option,
+        })
+      );
+      const data = await submitQuiz(quizId, formattedAnswers);
+      setResult(data);
+    } catch (err) {
+      console.error("Failed to submit quiz:", err);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const allAnswered = questions.length > 0 && questions.every((q) => answers[q.id]);

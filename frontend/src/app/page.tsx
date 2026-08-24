@@ -47,23 +47,23 @@ export default function Home() {
     <main className="min-h-screen bg-[#F4E9F8] flex justify-center p-6">
       <div className="w-full max-w-6xl">
         {/* Stepper */}
-        <div className="flex items-center justify-between mb-10 px-4">
-          {steps.map((step, i) => (
-            <div key={step.label} className="flex items-center flex-1">
-              <div className="flex flex-col items-center gap-2 flex-1">
-                <div className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center">
-                  <step.icon className="w-5 h-5 text-[#B15FCB]" />
-                </div>
-                <span className="text-xs text-gray-500 text-center max-w-[100px]">
-                  {step.label}
-                </span>
-              </div>
-              {i < steps.length - 1 && (
-                <div className="h-px bg-gray-300 flex-1 -mt-6" />
-              )}
-            </div>
-          ))}
+        <div className="flex items-start justify-between mb-10 px-4 max-w-2xl mx-auto">
+  {steps.map((step, i) => (
+    <div key={step.label} className="flex items-center flex-1">
+      <div className="flex flex-col items-center gap-2 flex-1 text-center">
+        <div className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0">
+          <step.icon className="w-5 h-5 text-[#B15FCB]" />
         </div>
+        <span className="text-xs text-gray-500 text-center max-w-[110px] mx-auto">
+          {step.label}
+        </span>
+      </div>
+      {i < steps.length - 1 && (
+        <div className="h-px bg-gray-300 flex-1 -mt-6 shrink-0" />
+      )}
+    </div>
+  ))}
+</div>
 
         {/* Hero card */}
         <div className="bg-[#EAD4F0] rounded-2xl p-6 flex items-center justify-between mb-6">

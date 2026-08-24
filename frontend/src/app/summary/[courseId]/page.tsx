@@ -16,9 +16,15 @@ export default function SummaryPage() {
   const [level, setLevel] = useState("medium");
 
   useEffect(() => {
+    if (!courseId || isNaN(courseId)) return;
+
     setLoading(true);
     getSummary(courseId, level)
       .then((data) => setSummary(data.summary))
+      .catch((err) => {
+        console.error("Failed to load summary:", err);
+        setSummary(null);
+      })
       .finally(() => setLoading(false));
   }, [courseId, level]);
 

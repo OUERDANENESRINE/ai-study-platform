@@ -39,10 +39,16 @@ export default function ProgressPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!courseId || isNaN(courseId)) return;
+
+    setLoading(true);
     Promise.all([getProgress(courseId), getRecommendation(courseId)])
       .then(([progressData, recData]) => {
         setProgress(progressData);
         setRecommendation(recData.recommendation);
+      })
+      .catch((err) => {
+        console.error("Failed to load progress:", err);
       })
       .finally(() => setLoading(false));
   }, [courseId]);

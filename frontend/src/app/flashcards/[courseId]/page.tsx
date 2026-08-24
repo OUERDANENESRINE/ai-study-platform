@@ -27,10 +27,15 @@ export default function FlashcardsPage() {
     setFlipped(false);
     generateFlashcards(courseId)
       .then((data) => setCards(data.flashcards))
+      .catch((err) => {
+        console.error("Failed to load flashcards:", err);
+        setCards([]);
+      })
       .finally(() => setLoading(false));
   };
 
   useEffect(() => {
+    if (!courseId || isNaN(courseId)) return;
     loadCards();
   }, [courseId]);
 
@@ -49,7 +54,11 @@ export default function FlashcardsPage() {
 
   const handleDifficulty = async (difficulty: string) => {
     if (!currentCard) return;
-    await reviewFlashcard(currentCard.id, difficulty);
+    try {
+      await reviewFlashcard(currentCard.id, difficulty);
+    } catch (err) {
+      console.error("Failed to save review:", err);
+    }
     if (!isLastCard) goNext();
     else setFlipped(false);
   };
