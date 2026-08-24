@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { Send } from "lucide-react";
 import { askQuestion } from "@/lib/api";
+import { useLanguage } from "@/context/LanguageContext";
 
 type Message = {
   role: "user" | "assistant";
@@ -14,6 +15,7 @@ type Message = {
 export default function QAPage() {
   const params = useParams();
   const courseId = Number(params.courseId);
+  const { t } = useLanguage();
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -41,7 +43,7 @@ export default function QAPage() {
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", text: "Une erreur est survenue, réessaie." },
+        { role: "assistant", text: t("qaError") },
       ]);
     } finally {
       setLoading(false);
@@ -58,13 +60,10 @@ export default function QAPage() {
   return (
     <main className="min-h-screen bg-[#F4E9F8] flex justify-center p-6">
       <div className="w-full max-w-2xl flex flex-col h-[90vh]">
-        
-
-        {/* Zone de chat */}
         <div className="bg-[#EAD4F0] rounded-2xl p-4 flex-1 overflow-y-auto flex flex-col gap-3">
           {messages.length === 0 && (
             <p className="text-sm text-gray-500 text-center mt-10">
-              Pose une question sur ton cours
+              {t("askAboutCourse")}
             </p>
           )}
 
@@ -80,7 +79,7 @@ export default function QAPage() {
               <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
               {msg.sources && msg.sources.length > 0 && (
                 <p className="text-xs text-gray-400 mt-2">
-                  Sources : pages {msg.sources.join(", ")}
+                  {t("sources")} {msg.sources.join(", ")}
                 </p>
               )}
             </div>
@@ -88,21 +87,20 @@ export default function QAPage() {
 
           {loading && (
             <div className="bg-white rounded-xl px-4 py-3 self-start text-sm text-gray-400">
-              En train de réfléchir...
+              {t("thinking")}
             </div>
           )}
 
           <div ref={bottomRef} />
         </div>
 
-        {/* Input */}
         <div className="flex items-center gap-2 mt-4 bg-white rounded-full px-4 py-2 shadow-sm">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Question ? "
+            placeholder={t("askAnything")}
             className="flex-1 outline-none text-sm text-gray-700"
             disabled={loading}
           />

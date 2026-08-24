@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { generateQuiz, submitQuiz } from "@/lib/api";
+import { useLanguage } from "@/context/LanguageContext";
 
 type Question = {
   id: number;
@@ -13,6 +14,7 @@ type Question = {
 export default function QuizPage() {
   const params = useParams();
   const courseId = Number(params.courseId);
+  const { t } = useLanguage();
 
   const [quizId, setQuizId] = useState<number | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -60,7 +62,7 @@ export default function QuizPage() {
   if (loading) {
     return (
       <main className="min-h-screen bg-[#F4E9F8] flex items-center justify-center">
-        <p className="text-gray-600">Generating quiz...</p>
+        <p className="text-gray-600">{t("generatingQuiz")}</p>
       </main>
     );
   }
@@ -72,7 +74,7 @@ export default function QuizPage() {
         <div className="w-full max-w-2xl">
           <div className="bg-white rounded-2xl p-8 text-center shadow-sm">
             <p className="text-2xl font-bold text-gray-800 mb-2">
-              Your result
+              {t("yourResult")}
             </p>
             <p className="text-3xl font-bold text-[#B15FCB] mb-6">
               {result.score} / {result.total} — {percentage}%
@@ -80,7 +82,7 @@ export default function QuizPage() {
             {result.weak_topics.length > 0 && (
               <div className="text-left bg-[#EAD4F0] rounded-xl p-4 mb-6">
                 <p className="font-semibold text-gray-700 mb-2">
-                  You should review:
+                  {t("youShouldReview")}
                 </p>
                 <ul className="list-disc list-inside text-sm text-gray-600">
                   {result.weak_topics.map((topic: string) => (
@@ -93,7 +95,7 @@ export default function QuizPage() {
               onClick={loadQuiz}
               className="bg-[#B15FCB] text-white rounded-full px-6 py-3 text-sm font-medium"
             >
-              Generate new questions
+              {t("generateNewQuestions")}
             </button>
           </div>
         </div>
@@ -105,7 +107,7 @@ export default function QuizPage() {
     <main className="min-h-screen bg-[#F4E9F8] flex justify-center p-6">
       <div className="w-full max-w-2xl pb-24">
         <span className="text-sm font-medium text-gray-500 block mb-4">
-          QCM — {questions.length} questions
+          {t("quiz")} — {questions.length} questions
         </span>
 
         <div className="flex flex-col gap-4">
@@ -136,7 +138,6 @@ export default function QuizPage() {
           ))}
         </div>
 
-        {/* Barre fixe en bas avec bouton de soumission */}
         <div className="fixed bottom-6 left-0 right-0 flex justify-center px-6">
           <button
             onClick={handleSubmit}
@@ -144,10 +145,10 @@ export default function QuizPage() {
             className="bg-[#B15FCB] text-white rounded-full px-8 py-3 text-sm font-medium shadow-lg disabled:opacity-40"
           >
             {submitting
-              ? "Submitting..."
+              ? t("submitting")
               : allAnswered
-              ? "Submit quiz"
-              : `Answer all questions (${Object.keys(answers).length}/${questions.length})`}
+              ? t("submitQuizBtn")
+              : `${t("answerAllQuestions")} (${Object.keys(answers).length}/${questions.length})`}
           </button>
         </div>
       </div>

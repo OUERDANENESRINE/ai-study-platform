@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { generateFlashcards, reviewFlashcard } from "@/lib/api";
+import { useLanguage } from "@/context/LanguageContext";
 
 type Card = {
   id: number;
@@ -13,6 +14,7 @@ type Card = {
 export default function FlashcardsPage() {
   const params = useParams();
   const courseId = Number(params.courseId);
+  const { t } = useLanguage();
 
   const [cards, setCards] = useState<Card[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -55,7 +57,7 @@ export default function FlashcardsPage() {
   if (loading) {
     return (
       <main className="min-h-screen bg-[#F4E9F8] flex items-center justify-center">
-        <p className="text-gray-600">Generating flashcards...</p>
+        <p className="text-gray-600">{t("generatingFlashcards")}</p>
       </main>
     );
   }
@@ -63,7 +65,7 @@ export default function FlashcardsPage() {
   if (!currentCard) {
     return (
       <main className="min-h-screen bg-[#F4E9F8] flex items-center justify-center">
-        <p className="text-gray-600">No flashcards available.</p>
+        <p className="text-gray-600">{t("noFlashcards")}</p>
       </main>
     );
   }
@@ -72,10 +74,9 @@ export default function FlashcardsPage() {
     <main className="min-h-screen bg-[#F4E9F8] flex justify-center p-6">
       <div className="w-full max-w-xl flex flex-col items-center">
         <span className="text-sm font-medium text-gray-500 mb-6">
-          Flashcards
+          {t("flashcards")}
         </span>
 
-        {/* Carte flip */}
         <div
           onClick={() => setFlipped((f) => !f)}
           className="w-full max-w-sm h-64 cursor-pointer"
@@ -106,7 +107,7 @@ export default function FlashcardsPage() {
           </div>
         </div>
 
-        <p className="text-xs text-gray-400 mt-3">Click to flip</p>
+        <p className="text-xs text-gray-400 mt-3">{t("clickToFlip")}</p>
 
         {flipped && (
           <div className="flex gap-3 mt-6">
@@ -114,31 +115,30 @@ export default function FlashcardsPage() {
               onClick={() => handleDifficulty("difficult")}
               className="bg-white rounded-full px-4 py-2 text-sm shadow-sm"
             >
-               Difficult
+              😕 {t("difficultBtn")}
             </button>
             <button
               onClick={() => handleDifficulty("good")}
               className="bg-white rounded-full px-4 py-2 text-sm shadow-sm"
             >
-               Good
+              🙂 {t("goodBtn")}
             </button>
             <button
               onClick={() => handleDifficulty("easy")}
               className="bg-white rounded-full px-4 py-2 text-sm shadow-sm"
             >
-               Easy
+              😎 {t("easyBtn")}
             </button>
           </div>
         )}
 
-        {/* Navigation */}
         <div className="flex items-center gap-4 mt-6">
           <button
             onClick={goPrevious}
             disabled={currentIndex === 0}
             className="text-sm text-gray-500 disabled:opacity-30"
           >
-            ← Previous
+            ← {t("previousBtn")}
           </button>
           <span className="text-sm text-gray-500">
             {currentIndex + 1} / {cards.length}
@@ -148,17 +148,16 @@ export default function FlashcardsPage() {
             disabled={isLastCard}
             className="text-sm text-gray-500 disabled:opacity-30"
           >
-            Next →
+            {t("nextBtn")} →
           </button>
         </div>
 
-        {/* Générer un nouveau set, visible à la dernière carte */}
         {isLastCard && (
           <button
             onClick={loadCards}
             className="mt-8 bg-[#B15FCB] text-white rounded-full px-6 py-3 text-sm font-medium"
           >
-            Generate new flashcards
+            {t("generateNewFlashcards")}
           </button>
         )}
       </div>

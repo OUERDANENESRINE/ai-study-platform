@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { getProgress, getRecommendation } from "@/lib/api";
+import { useLanguage } from "@/context/LanguageContext";
 
 type ProgressData = {
   overall_progress: number;
@@ -31,6 +32,7 @@ function ProgressBar({ label, value }: { label: string; value: number | null }) 
 export default function ProgressPage() {
   const params = useParams();
   const courseId = Number(params.courseId);
+  const { t } = useLanguage();
 
   const [progress, setProgress] = useState<ProgressData | null>(null);
   const [recommendation, setRecommendation] = useState<string | null>(null);
@@ -48,34 +50,29 @@ export default function ProgressPage() {
   if (loading || !progress) {
     return (
       <main className="min-h-screen bg-[#F4E9F8] flex items-center justify-center">
-        <p className="text-gray-600">Chargement de ta progression...</p>
+        <p className="text-gray-600">{t("loadingProgress")}</p>
       </main>
     );
   }
 
   return (
     <main className="min-h-screen bg-[#F4E9F8] flex justify-center p-6">
-      <div className="w-full max-w-2xl">
-       
-
-        {/* Progression globale */}
+      <div className="w-full max-w-3xl">
         <div className="bg-[#EAD4F0] rounded-2xl p-6 mb-6">
-          <p className="text-sm text-gray-600 mb-1">Overall progress</p>
+          <p className="text-sm text-gray-600 mb-1">{t("overallProgress")}</p>
           <p className="text-3xl font-bold text-[#B15FCB]">
             {progress.overall_progress}%
           </p>
         </div>
 
-        {/* Barres détaillées */}
         <div className="bg-white rounded-2xl p-6 shadow-sm mb-6">
-          <ProgressBar label="Quiz" value={progress.quiz_score_percent} />
-          <ProgressBar label="Flashcards" value={progress.flashcard_score_percent} />
+          <ProgressBar label={t("quiz")} value={progress.quiz_score_percent} />
+          <ProgressBar label={t("flashcards")} value={progress.flashcard_score_percent} />
         </div>
 
-        {/* Sujets à revoir */}
         {progress.weak_topics.length > 0 && (
           <div className="bg-white rounded-2xl p-6 shadow-sm mb-6">
-            <p className="font-semibold text-gray-700 mb-3">Needs review</p>
+            <p className="font-semibold text-gray-700 mb-3">{t("needsReview")}</p>
             <div className="flex flex-wrap gap-2">
               {progress.weak_topics.map((topic) => (
                 <span
@@ -89,11 +86,10 @@ export default function ProgressPage() {
           </div>
         )}
 
-        {/* Recommandation IA */}
         {recommendation && (
           <div className="bg-[#EAD4F0] rounded-2xl p-6">
             <p className="font-semibold text-gray-700 mb-2">
-              🧠 AI Study Recommendation
+              🧠 {t("aiRecommendation")}
             </p>
             <p className="text-sm text-gray-700">{recommendation}</p>
           </div>

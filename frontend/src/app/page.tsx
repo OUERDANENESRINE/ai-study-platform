@@ -4,44 +4,48 @@ import { FileText, Sparkles, MessagesSquare, BookOpen, ScrollText, Layers } from
 import UploadCourse from "@/components/UploadCourse";
 import Link from "next/link";
 import { useCourse } from "@/context/CourseContext";
-
-const steps = [
-  { icon: FileText, label: "Importez votre PDF" },
-  { icon: Sparkles, label: "L'IA génère le résumé" },
-  { icon: BookOpen, label: "Étudiez et suivez votre progression" },
-];
-
-const features = [
-  {
-    icon: MessagesSquare,
-    title: "Q&A",
-    subtitle: "Ask anything about your course",
-  },
-  {
-    icon: ScrollText,
-    title: "A resume",
-    subtitle: "Understand the key concepts",
-  },
-  {
-    icon: Sparkles,
-    title: "Quiz (QCM)",
-    subtitle: "Test your knowledge",
-  },
-  {
-    icon: Layers,
-    title: "Flashcards",
-    subtitle: "Memorize faster",
-  },
-];
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function Home() {
   const { course } = useCourse();
+  const { t } = useLanguage();
+
+  const steps = [
+    { icon: FileText, label: t("uploadPrompt") },
+    { icon: Sparkles, label: t("generatingSummary") },
+    { icon: BookOpen, label: t("progress") },
+  ];
+
+  const features = [
+    {
+      key: "qa",
+      icon: MessagesSquare,
+      title: t("qa"),
+      subtitle: t("qaAskTitle"),
+    },
+    {
+      key: "resume",
+      icon: ScrollText,
+      title: t("resume"),
+      subtitle: t("resumeTitle"),
+    },
+    {
+      key: "quiz",
+      icon: Sparkles,
+      title: t("quiz"),
+      subtitle: t("quizTitle"),
+    },
+    {
+      key: "flashcards",
+      icon: Layers,
+      title: t("flashcards"),
+      subtitle: t("flashcardsTitle"),
+    },
+  ];
 
   return (
     <main className="min-h-screen bg-[#F4E9F8] flex justify-center p-6">
-      <div className="w-full max-w-3xl">
-        
-
+      <div className="w-full max-w-6xl">
         {/* Stepper */}
         <div className="flex items-center justify-between mb-10 px-4">
           {steps.map((step, i) => (
@@ -64,14 +68,8 @@ export default function Home() {
         {/* Hero card */}
         <div className="bg-[#EAD4F0] rounded-2xl p-6 flex items-center justify-between mb-6">
           <div>
-            <p className="font-semibold text-gray-800 mb-1">
-              Quick and easy PDF summarization: Understand any content in
-              seconds
-            </p>
-            <p className="text-sm text-gray-600">
-              Our AI PDF summarizer provides clear summaries, Q&A, Quiz
-              (QCM), Flashcards and Progression Dashboards
-            </p>
+            <p className="font-semibold text-gray-800 mb-1">{t("heroTitle")}</p>
+            <p className="text-sm text-gray-600">{t("heroSubtitle")}</p>
           </div>
           <UploadCourse />
         </div>
@@ -80,16 +78,16 @@ export default function Home() {
         <div className="grid grid-cols-2 gap-4">
           {features.map((f) => (
             <Link
-              key={f.title}
+              key={f.key}
               href={
                 course
-                  ? f.title === "A resume"
+                  ? f.key === "resume"
                     ? `/summary/${course.id}`
-                    : f.title === "Q&A"
+                    : f.key === "qa"
                     ? `/qa/${course.id}`
-                    : f.title === "Quiz (QCM)"
+                    : f.key === "quiz"
                     ? `/quiz/${course.id}`
-                    : f.title === "Flashcards"
+                    : f.key === "flashcards"
                     ? `/flashcards/${course.id}`
                     : "#"
                   : "#"

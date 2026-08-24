@@ -3,22 +3,28 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCourse } from "@/context/CourseContext";
+import { useLanguage } from "@/context/LanguageContext";
 
 const navItems = [
-  { label: "Home", path: "/" },
-  { label: "Q&A", path: "/qa" },
-  { label: "Resume", path: "/summary" },
-  { label: "Quiz", path: "/quiz" },
-  { label: "Flashcards", path: "/flashcards" },
-  { label: "Progress", path: "/progress" },
+  { key: "home" as const, path: "/" },
+  { key: "qa" as const, path: "/qa" },
+  { key: "resume" as const, path: "/summary" },
+  { key: "quiz" as const, path: "/quiz" },
+  { key: "flashcards" as const, path: "/flashcards" },
+  { key: "progress" as const, path: "/progress" },
 ];
 
 export default function Navbar() {
   const { course } = useCourse();
   const pathname = usePathname();
+  const { language, setLanguage, t } = useLanguage();
+
+  const toggleLanguage = () => {
+    setLanguage(language === "en" ? "fr" : "en");
+  };
 
   return (
-    <div className="flex justify-center bg-[#F4E9F8] pt-6 - px-4">
+    <div className="flex justify-center bg-[#F4E9F8] pt-6 px-4">
       <div className="bg-white rounded-full shadow-sm px-3 py-2 flex items-center gap-2 max-w-full overflow-x-auto">
         {/* Liens de navigation */}
         {course ? (
@@ -36,12 +42,14 @@ export default function Navbar() {
                     : "text-gray-600 hover:bg-[#F4E9F8]"
                 }`}
               >
-                {item.label}
+                {t(item.key)}
               </Link>
             );
           })
         ) : (
-          <span className="px-3 text-sm font-medium text-gray-500">Home</span>
+          <span className="px-3 text-sm font-medium text-gray-500">
+            {t("home")}
+          </span>
         )}
 
         {/* Séparateur */}
@@ -56,8 +64,11 @@ export default function Navbar() {
         <div className="w-px h-5 bg-gray-200 mx-1" />
 
         {/* Langue */}
-        <button className="px-3 py-1.5 rounded-full text-xs text-gray-600 hover:bg-[#F4E9F8] whitespace-nowrap">
-          Fr ▾
+        <button
+          onClick={toggleLanguage}
+          className="px-3 py-1.5 rounded-full text-xs text-gray-600 hover:bg-[#F4E9F8] whitespace-nowrap"
+        >
+          {language === "en" ? "EN" : "FR"} ▾
         </button>
       </div>
     </div>

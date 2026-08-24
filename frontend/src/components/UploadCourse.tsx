@@ -30,7 +30,7 @@ export default function UploadCourse() {
       setCourse(data);
       setGlobalCourse(data);
     } catch (err) {
-      setError("Échec de l'upload. Réessaie.");
+      setError("Upload failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -41,9 +41,9 @@ export default function UploadCourse() {
       <div className="bg-white rounded-2xl p-6 shadow-sm">
         <p className="font-semibold text-gray-800">{course.filename}</p>
         <p className="text-sm text-gray-600 mt-1">
-          {course.num_pages} pages · {course.word_count} mots
+          {course.num_pages} pages · {course.word_count} words
         </p>
-        <p className="text-sm text-[#B15FCB] font-medium mt-2"> Ready to study</p>
+        <p className="text-sm text-[#B15FCB] font-medium mt-2">Ready to study</p>
       </div>
     );
   }
@@ -56,7 +56,7 @@ export default function UploadCourse() {
         <FileUp className="w-8 h-8 text-[#B15FCB]" />
       )}
       <span className="text-sm text-gray-600">
-        {loading ? "Analyse en cours..." : "Upload your course (PDF)"}
+        {loading ? "Analyzing..." : "Upload your course (PDF)"}
       </span>
       <input
         type="file"
